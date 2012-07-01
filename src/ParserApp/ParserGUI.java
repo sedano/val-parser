@@ -35,6 +35,7 @@ import org.antlr.runtime.*;
 /**
  *
  * @author Alejandro Sánchez Sedano
+ * @author Joao Miguel Viana da Silva Coelho
  */
 public class ParserGUI extends javax.swing.JFrame implements ActionListener {
     private Preferences prefs;
@@ -45,14 +46,20 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
     public ParserGUI() {
         initComponents();
 
+        //Output text pane redirects console, to write use System.out.println();
         MessageConsole console = new MessageConsole(output,true);
         console.redirectOut();
         console.redirectErr();
         
+        //Load last directory used preference from registry
         prefs = Preferences.userRoot().node(this.getClass().getName());
+        
+        //Initialize jsyntaxpane, takes control of jEditorPane 't'
         jsyntaxpane.DefaultSyntaxKit.initKit();
         t.setContentType("text/val2");
+        t.setCursor(new Cursor(Cursor.TEXT_CURSOR));
 
+        //File drop listener, takes only first file and checks extension
         FileDrop fileDrop = new FileDrop(t, new FileDrop.Listener()
                             {   public void filesDropped( java.io.File[] files )
                                     {   
@@ -119,13 +126,14 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         jBUndo = new javax.swing.JButton();
         jBRedo = new javax.swing.JButton();
         jBFind = new javax.swing.JButton();
+        jBComments = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
         jBCombo = new javax.swing.JComboBox();
         jBParse = new javax.swing.JButton();
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         jSeparator3 = new javax.swing.JToolBar.Separator();
         jBTree = new javax.swing.JButton();
-        jToggleButton1 = new javax.swing.JToggleButton();
+        jTAlwaysTop = new javax.swing.JToggleButton();
         jBAbout = new javax.swing.JButton();
         jSplitPane2 = new javax.swing.JSplitPane();
         jSplitPane3 = new javax.swing.JSplitPane();
@@ -192,7 +200,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         jVersionB.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jVersionB.setText("Version:");
 
-        jVersion.setText("0.3b");
+        jVersion.setText("0.4b");
         jVersion.setToolTipText("");
 
         jLibrariesB.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -352,12 +360,21 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         jBFind.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jBFind.addActionListener(this);
         jToolBar.add(jBFind);
+
+        jBComments.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/comment.png"))); // NOI18N
+        jBComments.setToolTipText("Toggle Comments... (Ctrl+R)");
+        jBComments.setFocusable(false);
+        jBComments.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jBComments.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jBComments.addActionListener(this);
+        jToolBar.add(jBComments);
         jToolBar.add(jSeparator2);
 
         jBCombo.setEditable(true);
         jBCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "VAL II", "V+" }));
         jBCombo.setToolTipText("Select language...");
         jBCombo.setEnabled(false);
+        jBCombo.setFocusable(false);
         jBCombo.setMaximumSize(new java.awt.Dimension(60, 20));
         jBCombo.setMinimumSize(new java.awt.Dimension(60, 20));
         jBCombo.setPreferredSize(new java.awt.Dimension(60, 20));
@@ -375,7 +392,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         jToolBar.add(jSeparator3);
 
         jBTree.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/OrgChartHS.png"))); // NOI18N
-        jBTree.setToolTipText("Expand workspace");
+        jBTree.setToolTipText("Expand Workspace");
         jBTree.setFocusable(false);
         jBTree.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jBTree.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -386,17 +403,17 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         });
         jToolBar.add(jBTree);
 
-        jToggleButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/BringToFrontHS.png"))); // NOI18N
-        jToggleButton1.setToolTipText("Always on Top");
-        jToggleButton1.setFocusable(false);
-        jToggleButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jToggleButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToggleButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+        jTAlwaysTop.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/BringToFrontHS.png"))); // NOI18N
+        jTAlwaysTop.setToolTipText("Always on Top");
+        jTAlwaysTop.setFocusable(false);
+        jTAlwaysTop.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jTAlwaysTop.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jTAlwaysTop.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jToggleButton1MouseClicked(evt);
+                jTAlwaysTopMouseClicked(evt);
             }
         });
-        jToolBar.add(jToggleButton1);
+        jToolBar.add(jTAlwaysTop);
 
         jBAbout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/Help.png"))); // NOI18N
         jBAbout.setToolTipText("About...");
@@ -414,7 +431,6 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         jSplitPane2.setDividerLocation(390);
         jSplitPane2.setDividerSize(10);
         jSplitPane2.setResizeWeight(0.9);
-        jSplitPane2.setEnabled(false);
         jSplitPane2.setFocusable(false);
         jSplitPane2.setPreferredSize(new java.awt.Dimension(500, 394));
 
@@ -422,6 +438,8 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         jSplitPane3.setDividerSize(8);
         jSplitPane3.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         jSplitPane3.setResizeWeight(0.75);
+        jSplitPane3.setFocusable(false);
+        jSplitPane3.setMinimumSize(new java.awt.Dimension(250, 56));
 
         t.setContentType("text/val2");
         t.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -438,7 +456,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         output.setEditable(false);
         output.setText("Output:");
         output.setComponentPopupMenu(jPopupMenu1);
-        output.setCursor(new java.awt.Cursor(java.awt.Cursor.CROSSHAIR_CURSOR));
+        output.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         output.setFocusable(false);
         jScrollPane3.setViewportView(output);
 
@@ -450,10 +468,18 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
 
         javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("Workspace");
         javax.swing.tree.DefaultMutableTreeNode treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Programs");
+        javax.swing.tree.DefaultMutableTreeNode treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Loaded");
+        javax.swing.tree.DefaultMutableTreeNode treeNode4 = new javax.swing.tree.DefaultMutableTreeNode("(Empty)");
+        treeNode3.add(treeNode4);
+        treeNode2.add(treeNode3);
         treeNode1.add(treeNode2);
         treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Variables");
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("(Empty)");
+        treeNode2.add(treeNode3);
         treeNode1.add(treeNode2);
         treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Locations");
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("(Empty)");
+        treeNode2.add(treeNode3);
         treeNode1.add(treeNode2);
         jTree.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
         jScrollPane1.setViewportView(jTree);
@@ -498,7 +524,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
 
         jWarning.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/WarningHS.png"))); // NOI18N
         jWarning.setText(" ");
-        jWarning.setToolTipText("Warning high speed");
+        jWarning.setToolTipText("");
         jWarning.setBorder(null);
         jWarning.setBorderPainted(false);
         jWarning.setContentAreaFilled(false);
@@ -545,7 +571,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jSeparator5, javax.swing.GroupLayout.DEFAULT_SIZE, 10, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLMSpeed)
@@ -647,15 +673,21 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    /**
+     * The functions below are generated via the design module, they are event
+     * based for each widget, names are self explanatory.
+     */
+
     private void jSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSliderStateChanged
         jLSpeed.setText(jSlider.getValue()+"%");
         check_warning();
     }//GEN-LAST:event_jSliderStateChanged
 
-    private void jToggleButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jToggleButton1MouseClicked
+    private void jTAlwaysTopMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTAlwaysTopMouseClicked
         this.setAlwaysOnTop(!(this.isAlwaysOnTop()));
 
-    }//GEN-LAST:event_jToggleButton1MouseClicked
+    }//GEN-LAST:event_jTAlwaysTopMouseClicked
     private void jBTreeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBTreeActionPerformed
         if (jTree.isCollapsed(1)){
             for (int i = 0; i < jTree.getRowCount(); i++) {
@@ -666,17 +698,6 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
                 jTree.collapseRow(i);
             }
         }
-//        if(jSplitPane2.getDividerSize()!=0){
-//        jSplitPane2.setDividerSize(0);
-//        jSplitPane2.setDividerLocation(jSplitPane2.getLocation().x+jSplitPane2.getSize().width);
-//        }
-//        else
-//        {
-//           //jSplitPane2.setDividerLocation((int)(jSplitPane2.getSize().width*(jSplitPane2.getResizeWeight())));
-//           jSplitPane2.setDividerLocation((int)((jSplitPane2.getLocation().x+jSplitPane2.getSize().width)*0.75));
-//           jSplitPane2.setDividerSize(10);
-//        }
-
     }//GEN-LAST:event_jBTreeActionPerformed
 
     private void jMClearOutputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMClearOutputActionPerformed
@@ -687,6 +708,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         file_exit();
     }//GEN-LAST:event_formWindowClosing
 
+    //tKeyReleased is to detect changes in the file and add the * in the title.
     private void tKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tKeyReleased
             if (is_saved & !t.getText().equals(content)){
             is_saved = false;
@@ -708,14 +730,14 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
 
     private void jLAboutMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLAboutMouseClicked
         jAbout.dispose();
-        //        for (int i = 0; i < 23; i++) {
-        //            try {
-        //                jAbout.setLocation((int)(Math.random()*1280), (int)(Math.random()*1024));
-        //                Thread.sleep(100);
-        //            } catch (InterruptedException ex) {
-        //                Logger.getLogger(ParserGUI.class.getName()).log(Level.SEVERE, null, ex);
-        //            }
-        //        }
+//                for (int i = 0; i < 23; i++) {
+//                    try {
+//                        jAbout.setLocation((int)(Math.random()*1280), (int)(Math.random()*1024));
+//                        Thread.sleep(100);
+//                    } catch (InterruptedException ex) {
+//                        Logger.getLogger(ParserGUI.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                }
     }//GEN-LAST:event_jLAboutMouseClicked
 
     /**
@@ -774,6 +796,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
     private javax.swing.JLabel jAuthorsB;
     private javax.swing.JButton jBAbout;
     private javax.swing.JComboBox jBCombo;
+    private javax.swing.JButton jBComments;
     private javax.swing.JButton jBFind;
     private javax.swing.JButton jBNew;
     private javax.swing.JButton jBOpen;
@@ -816,8 +839,8 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
     private javax.swing.JSlider jSlider;
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JSplitPane jSplitPane3;
+    private javax.swing.JToggleButton jTAlwaysTop;
     private javax.swing.JLabel jTitle;
-    private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JToolBar jToolBar;
     private javax.swing.JTree jTree;
     private javax.swing.JLabel jVersion;
@@ -829,7 +852,11 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
     public static File myfile;
 
 
-
+/**
+ * Input handler, relates listener to buttons with same function.
+ * To modify listeners for controls go to 'Code' in 'Properties' of the swing 
+ * Design editor on the desired swing component.
+ */
 public void actionPerformed(ActionEvent e){
         if(e.getSource()==jBNew || e.getSource()==jMNew)
             file_new();
@@ -843,7 +870,7 @@ public void actionPerformed(ActionEvent e){
                 if (is_saved){
                 System.out.println("Warning: Ignoring errors");
                 optimize_code();
-            }
+                }
             } catch (IOException ex) {
                 Logger.getLogger(ParserGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -858,9 +885,22 @@ public void actionPerformed(ActionEvent e){
             edit_undo();
         else if(e.getSource()==jBRedo)
             edit_redo();
+        else if(e.getSource()==jBComments)
+            edit_toggle_comments();
         else if(e.getSource()==jBFind || e.getSource()==jMFind)
               edit_find();
     }
+
+
+/**
+ * Start declaration of actions (functions).
+ * Some important variables:
+ *  content -> stores the value of the code immediately after saving.
+ *  path -> variable that contains the directory preference.
+ *  is_saved -> boolean to check if file is saved.
+ *  t -> jEditorPane, where the code is shown.
+ *  output -> Read only jEditorPane, where the errors and information is shown.
+ */
 
     public void file_new(){
         if(t.getText().equals("") || t.getText().equals(content))
@@ -873,7 +913,6 @@ public void actionPerformed(ActionEvent e){
             empty_tree();
             output.setText("Output:");
             ((jsyntaxpane.SyntaxDocument)t.getDocument()).clearUndos();
-            
         }
         else
         {
@@ -1014,48 +1053,6 @@ public void actionPerformed(ActionEvent e){
         }
     }
 
-//    public void file_print() {
-//        PrinterJob printer = PrinterJob.getPrinterJob();
-//        //printer.setPrintable( this);
-//        HashPrintRequestAttributeSet printAttr = new HashPrintRequestAttributeSet();
-//        if(printer.printDialog(printAttr))     // Display print dialog
-//        {            // If true is returned...
-//            try
-//            {
-//                printer.print(printAttr);    // then print
-//            }
-//            catch(PrinterException e)
-//            {
-//                JOptionPane.showMessageDialog(this,"Failed to print the file: "+e,"Error",JOptionPane.ERROR_MESSAGE);
-//            }
-//        }
-//    }
-
-    
-//    public void file_close(){
-//        if(t.getText().equals("") || t.getText().equals(content))
-//        {
-//            t.setText("");
-//            path = "";
-//            setTitle("Untitled - parser");
-//        }
-//        else
-//        {
-//            int a = JOptionPane.showConfirmDialog(null, "The text has been changed\nDo you want to save the changes?");
-//            if(a==0)
-//                file_save();
-//            else if(a==1)
-//            {
-//                t.setText("");
-//                path = "";
-//                setTitle("Untitled - parser");
-//            }
-//            else if(a==2)
-//                return;
-//        }
-//
-//    }
-
     public void file_exit(){
 
         if(t.getText().equals("") || t.getText().equals(content))
@@ -1073,6 +1070,10 @@ public void actionPerformed(ActionEvent e){
         }
     }
 
+    /**
+     * Undo Compound is provided by jsyntaxpane, the undo and redo buttons simply
+     * send key down events Ctrl+Z, Ctrl+Y.
+     */
     public void edit_undo() {
             try
             {
@@ -1084,7 +1085,6 @@ public void actionPerformed(ActionEvent e){
                     robot.keyRelease(KeyEvent.VK_CONTROL);
 
             } catch (AWTException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
             }
 
@@ -1096,24 +1096,26 @@ public void actionPerformed(ActionEvent e){
                     Robot robot = new Robot();
                     robot.keyPress(KeyEvent.VK_CONTROL);
                     robot.keyPress(KeyEvent.VK_Y);
-                    // CTRL+Z is now pressed (receiving application should see a "key down" event.)
+                    // CTRL+Y is now pressed (receiving application should see a "key down" event.)
                     robot.keyRelease(KeyEvent.VK_Y);
                     robot.keyRelease(KeyEvent.VK_CONTROL);
-
             } catch (AWTException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
             }
     }
 
+    /**
+     * Find module is provided by jsyntaxpane, the findo button simply send key
+     * down event Ctrl+F.
+     */
+    
     public void edit_find(){
-            //jsyntaxpane.actions.QuickFindAction();
             try
             {
                     Robot robot = new Robot();
                     robot.keyPress(KeyEvent.VK_CONTROL);
                     robot.keyPress(KeyEvent.VK_F);
-                    // CTRL+Z is now pressed (receiving application should see a "key down" event.)
+                    // CTRL+F is now pressed (receiving application should see a "key down" event.)
                     robot.keyRelease(KeyEvent.VK_F);
                     robot.keyRelease(KeyEvent.VK_CONTROL);
 
@@ -1122,47 +1124,102 @@ public void actionPerformed(ActionEvent e){
                     e.printStackTrace();
             }
     }
+    
+    
+    public void edit_toggle_comments(){
+            try
+            {
+                    Robot robot = new Robot();
+                    robot.keyPress(KeyEvent.VK_CONTROL);
+                    robot.keyPress(KeyEvent.VK_R);
+                    // CTRL+R is now pressed (receiving application should see a "key down" event.)
+                    robot.keyRelease(KeyEvent.VK_R);
+                    robot.keyRelease(KeyEvent.VK_CONTROL);
 
+            } catch (AWTException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+            }
+    }
+    /**
+     * Clears the workspace jTree setting default values.
+     */
     public void empty_tree(){
             DefaultMutableTreeNode root = new DefaultMutableTreeNode("Workspace"); 
-            DefaultMutableTreeNode parent; 
+            DefaultMutableTreeNode parent;
+            DefaultMutableTreeNode child; 
             parent = new DefaultMutableTreeNode("Programs"); 
             root.add(parent);
+            child = new DefaultMutableTreeNode("Loaded");
+            child.add(new DefaultMutableTreeNode("(Empty)"));
+            parent.add(child);
             parent = new DefaultMutableTreeNode("Variables"); 
             root.add(parent);
+            parent.add(new DefaultMutableTreeNode("(Empty)"));
             parent = new DefaultMutableTreeNode("Locations"); 
             root.add(parent);
+            parent.add(new DefaultMutableTreeNode("(Empty)"));
             jTree.setModel(new javax.swing.tree.DefaultTreeModel(root));
     }
     
+    /**
+     * Fill_tree functions gets the public static variables from the Val2Parser
+     * class. Val2Parser and Val2Lexer SHOULD NOT be modified, they are generated
+     * by ANTLRWorks.
+     */
     public void fill_tree(){
             TreeSet<String> programs = Val2Parser.setPrograms;
             TreeSet<String> variables = Val2Parser.setVariables;
             TreeSet<String> locations = Val2Parser.setLocations;
-
-            
+            TreeSet<String> loads = Val2Parser.setLoads;
 
             DefaultMutableTreeNode root = new DefaultMutableTreeNode("Workspace"); 
-            DefaultMutableTreeNode parent; 
+            DefaultMutableTreeNode parent;
+            DefaultMutableTreeNode child; 
+            
+            /**
+             * For the parents the iterator extracts variables from the TreeSet 
+             * that stores the identifiers from the Parser.
+             */
+            
+            //PROGRAMS
             parent = new DefaultMutableTreeNode("Programs"); 
             root.add(parent);
             Iterator itp=programs.iterator();
+            if (!itp.hasNext())
+                parent.add(new DefaultMutableTreeNode("(Empty)"));
             while(itp.hasNext())
             {
                 parent.add(new DefaultMutableTreeNode((String)itp.next())); 
-            } 
-
+            }
+            //PROGRAMS -> LOADED
+            child = new DefaultMutableTreeNode("Loaded");
+            Iterator itld=loads.iterator();
+            if (!itld.hasNext())
+                child.add(new DefaultMutableTreeNode("(Empty)"));
+            while(itld.hasNext())
+            {
+                child.add(new DefaultMutableTreeNode((String)itld.next())); 
+            }
+            parent.add(child);
+            
+            //VARIABLES
             parent = new DefaultMutableTreeNode("Variables"); 
             root.add(parent);
             Iterator itv=variables.iterator();
+            if (!itv.hasNext())
+                parent.add(new DefaultMutableTreeNode("(Empty)"));
             while(itv.hasNext())
             {
                 parent.add(new DefaultMutableTreeNode((String)itv.next())); 
             } 
 
+            //LOCATIONS
             parent = new DefaultMutableTreeNode("Locations"); 
             root.add(parent);
             Iterator itl=locations.iterator();
+            if (!itl.hasNext())
+                parent.add(new DefaultMutableTreeNode("(Empty)"));
             while(itl.hasNext())
             {
                 parent.add(new DefaultMutableTreeNode((String)itl.next())); 
@@ -1172,9 +1229,12 @@ public void actionPerformed(ActionEvent e){
             for (int i = 0; i < jTree.getRowCount(); i++) {
                 jTree.expandRow(i);
             }
+            
+            //Important to clear TreeSets to avoid repetition of identifiers.
             Val2Parser.setPrograms.clear();
             Val2Parser.setVariables.clear();
             Val2Parser.setLocations.clear();
+            Val2Parser.setLoads.clear();
 }
     
     
@@ -1192,19 +1252,35 @@ public void actionPerformed(ActionEvent e){
         
     }
      
+    
+    /**
+     * optimize_code() uses java regexp to delete comments, empty lines and add
+     * the carriage return to the text file and outputs a txt file, in the same
+     * folder of the opened file.
+     * @throws IOException 
+     */
     public void optimize_code() throws IOException{
         String str, param;
         System.out.println("Generating optimized code...");
         str= t.getText().toLowerCase();
+        //Remove comments
         str = str.replaceAll(";.*?\r?\n","\r\n");
+        
+        //Remove empty lines
         str = str.replaceAll("(?m)^[ \t]*\r?\n","");
+        
+        //Remove white space
         str = str.replaceAll("(\\s+)*\r?\n(\\s+)*","\r\n");
+        
+        //Add extra new line after each ENDMODULE 'e'
         str = str.replaceAll("\r?\n(\\s+)*e(\\s+)*\r?\n","\r\ne\r\n\r\n");
 
+        //Appends the parameters at the beginning of the code.
         if (jCheck.isSelected())
             param = "zero\r\ny\r\nsp " + jSlider.getValue() + "\r\n\r\n";
         else
             param = "zero\r\ny\r\nsp " + jSlider.getValue() + "\r\n\r\n";
+        
         str = param + str + "\n";
         FileWriter fw = new FileWriter(myfile + "_ok.txt");
         fw.write(str);
@@ -1225,20 +1301,25 @@ public void actionPerformed(ActionEvent e){
                 Val2Parser parser = new Val2Parser(tokens);
                 //RuleReturnScope result = parser.compilationUnit();
                 parser.rule();
+                
+                /**
+                 * To check if there are no errors simply checks that the
+                 * output content is empty. TODO: Change the approach to allow
+                 * warnings.
+                 */
                 if (output.getText().contentEquals("Output:") & is_saved){
                     System.out.println("No errors found");
                     optimize_code();
-                    //fill_tree();
-                    //output.append("\n File saved");
                      }
                 else if (jCIgnore.isSelected()){
                     System.out.println("Ignoring errors...");
-                    optimize_code();
-                    
+                    optimize_code(); 
                 }
+                //Actions done with our without errors.
                 fill_tree();
             }
                 else
+                //If 't' is empty.
                     output.setText("Output:\nNo code to check");
         }
         catch(RecognitionException re) {
@@ -1250,9 +1331,6 @@ public void actionPerformed(ActionEvent e){
     }
     
     public void help_about(){
-        //abt.window.setVisible(true);
-        jAbout.setVisible(true);
-        //System.out.println("2012");
-        
+        jAbout.setVisible(true);     
     }
 }
