@@ -77,7 +77,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
                                                 path = myfile.toString();
                                                 is_saved = true;
                                                 prefs.put("dirPref",path);
-                                                setTitle("Parser - " + myfile.getName());
+                                                setTitle("VAL Parser - " + myfile.getName());
                                                 }
                                             }
                                         }
@@ -188,7 +188,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         });
 
         jTitle.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jTitle.setText("VAL Editor 2012");
+        jTitle.setText("VAL Parser 2012");
 
         jAuthorsB.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jAuthorsB.setText("Authors:");
@@ -296,7 +296,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         jBOptim.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("VAL Editor");
+        setTitle("VAL Parser");
         setIconImages(null);
         setMinimumSize(new java.awt.Dimension(600, 480));
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -908,7 +908,7 @@ public void actionPerformed(ActionEvent e){
             t.setText("");
             content = "";
             path = "";
-            setTitle("Parser - untitled");
+            setTitle("VAL Parser - untitled");
             is_saved = true;
             empty_tree();
             output.setText("Output:");
@@ -923,7 +923,7 @@ public void actionPerformed(ActionEvent e){
             {
                 t.setText("");
                 path = "";
-                setTitle("Parser - untitled");
+                setTitle("VAL Parser - untitled");
                 is_saved = true;
                 empty_tree();
                 ((jsyntaxpane.SyntaxDocument)t.getDocument()).clearUndos();
@@ -969,7 +969,7 @@ public void actionPerformed(ActionEvent e){
             path = myfile.toString();
             is_saved = true;
             prefs.put("dirPref",fc.getCurrentDirectory().toString());
-            setTitle("Parser - " + myfile.getName());
+            setTitle("VAL Parser - " + myfile.getName());
             empty_tree();
             output.setText("Output:");
             ((jsyntaxpane.SyntaxDocument)t.getDocument()).clearUndos();
@@ -996,7 +996,7 @@ public void actionPerformed(ActionEvent e){
             fw.write(t.getText());
             content = t.getText();
             fw.close();
-            setTitle("Parser - " + myfile.getName());
+            setTitle("VAL Parser - " + myfile.getName());
             is_saved = true;
             //System.out.println("File saved");
             //output.append("\n File saved");
@@ -1040,7 +1040,7 @@ public void actionPerformed(ActionEvent e){
             content = t.getText();
             path = myfile.toString();
             prefs.put("dirPref",fc.getCurrentDirectory().toString());
-            setTitle("Parser - " + myfile.getName());
+            setTitle("VAL Parser - " + myfile.getName());
             is_saved = true;
             fw.close();
             //System.out.println("File saved");
