@@ -5,32 +5,27 @@
  */
 package ParserApp;
 
-import java.awt.*;
+import java.awt.AWTException;
+import java.awt.Cursor;
+import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.AWTException;
-import java.awt.Robot;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.TreeSet;
+import java.io.*;
 import java.util.Iterator;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.*;
+import java.util.prefs.Preferences;
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
-import javax.swing.text.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.BadLocationException;
 import javax.swing.tree.DefaultMutableTreeNode;
-import jsyntaxpane.DefaultSyntaxKit;
-import org.antlr.runtime.*;
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 
 /**
  *
@@ -71,7 +66,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
                                                 StringBuilder str = new StringBuilder();
                                                 String line;
                                                 while((line = input.readLine()) != null) // st is declared as string avobe
-                                                str.append(line+"\n");
+                                                str.append(line).append("\n");
                                                 t.setText(str.toString());
                                                 content = t.getText();
                                                 path = myfile.toString();
@@ -83,11 +78,11 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
                                         }
                                         catch(FileNotFoundException e)
                                         {
-                                            JOptionPane.showMessageDialog(null, "File not found: \n"+e);
+                                            System.err.println("File not found: \n"+e);
                                         }
                                         catch(IOException e)
                                         {
-                                            JOptionPane.showMessageDialog(null, "File could not be read: \n"+e);
+                                            System.err.println("File could not be read: \n"+e);
                                         }
                                     }
                             });
@@ -781,6 +776,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
          */
         java.awt.EventQueue.invokeLater(new Runnable() {
 
+            @Override
             public void run() {
                 new ParserGUI().setVisible(true);
 
@@ -857,6 +853,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
  * To modify listeners for controls go to 'Code' in 'Properties' of the swing 
  * Design editor on the desired swing component.
  */
+    @Override
 public void actionPerformed(ActionEvent e){
         if(e.getSource()==jBNew || e.getSource()==jMNew)
             file_new();
@@ -916,7 +913,7 @@ public void actionPerformed(ActionEvent e){
         }
         else
         {
-            int a = JOptionPane.showConfirmDialog(null, "The text has been changed\nDo you want to save the changes?");
+            int a = JOptionPane.showConfirmDialog(this, "The text has been changed\nDo you want to save the changes?");
             if(a==0)
                 file_save();
             else if(a==1)
@@ -928,14 +925,14 @@ public void actionPerformed(ActionEvent e){
                 empty_tree();
                 ((jsyntaxpane.SyntaxDocument)t.getDocument()).clearUndos();
             }
-            else if(a==2)
-                return;
+            else if(a==2) {
+            }
         }
     }
     
     public void file_open(){
         if(!is_saved){
-            int a = JOptionPane.showConfirmDialog(null, "The text has been changed\nDo you want to save the changes?");
+            int a = JOptionPane.showConfirmDialog(this, "The text has been changed\nDo you want to save the changes?");
                 if(a==0)
                     file_save();
                 else if(a==2)
@@ -949,7 +946,7 @@ public void actionPerformed(ActionEvent e){
         fc.addChoosableFileFilter(filter);
         fc.setFileFilter(filter);
         int r=fc.showOpenDialog(this);
-        if(r==fc.CANCEL_OPTION)
+        if(r==JFileChooser.CANCEL_OPTION)
             return;
         myfile = fc.getSelectedFile();
         if(myfile == null || myfile.getName().equals(""))
@@ -963,7 +960,7 @@ public void actionPerformed(ActionEvent e){
             StringBuilder str = new StringBuilder();
             String line;
             while((line = input.readLine()) != null) // st is declared as string avobe
-            str.append(line+"\n");
+            str.append(line).append("\n");
             t.setText(str.toString());
             content = t.getText();
             path = myfile.toString();
@@ -976,11 +973,11 @@ public void actionPerformed(ActionEvent e){
         }
         catch(FileNotFoundException e)
         {
-            JOptionPane.showMessageDialog(null, "File not found: \n"+e);
+            JOptionPane.showMessageDialog(this, "File not found: \n"+e);
         }
         catch(IOException e)
         {
-            JOptionPane.showMessageDialog(null, "File could not be read: \n"+e);
+            JOptionPane.showMessageDialog(this, "File could not be read: \n"+e);
         }
     }
 
@@ -992,10 +989,10 @@ public void actionPerformed(ActionEvent e){
         }
         try
         {
-            FileWriter fw = new FileWriter(path);
-            fw.write(t.getText());
-            content = t.getText();
-            fw.close();
+            try (FileWriter fw = new FileWriter(path)) {
+                fw.write(t.getText());
+                content = t.getText();
+            }
             setTitle("VAL Parser - " + myfile.getName());
             is_saved = true;
             //System.out.println("File saved");
@@ -1014,7 +1011,7 @@ public void actionPerformed(ActionEvent e){
         fc.addChoosableFileFilter(filter);
         fc.setFileFilter(filter);
         int r = fc.showSaveDialog(this);
-        if(r==fc.CANCEL_OPTION)
+        if(r==JFileChooser.CANCEL_OPTION)
             return;
         myfile = fc.getSelectedFile();
         if(myfile==null || myfile.getName().equals(""))
@@ -1034,17 +1031,15 @@ public void actionPerformed(ActionEvent e){
             String extVal = "";
             if (!myfile.toString().endsWith(".val"))
                       extVal = ".val";
-            FileWriter fw = new FileWriter(myfile + extVal);
-            myfile = new File(myfile.toString() + extVal);
-            fw.write(t.getText());
-            content = t.getText();
-            path = myfile.toString();
-            prefs.put("dirPref",fc.getCurrentDirectory().toString());
-            setTitle("VAL Parser - " + myfile.getName());
-            is_saved = true;
-            fw.close();
-            //System.out.println("File saved");
-            //output.append("\n File saved");
+            try (FileWriter fw = new FileWriter(myfile + extVal)) {
+                myfile = new File(myfile.toString() + extVal);
+                fw.write(t.getText());
+                content = t.getText();
+                path = myfile.toString();
+                prefs.put("dirPref",fc.getCurrentDirectory().toString());
+                setTitle("VAL Parser - " + myfile.getName());
+                is_saved = true;
+            }
             
         }
         catch(IOException e)
@@ -1059,14 +1054,14 @@ public void actionPerformed(ActionEvent e){
             System.exit(0);
         else
         {
-            int b = JOptionPane.showConfirmDialog(null, "The text has been changed.\nDo you want to save the changes?");
+            int b = JOptionPane.showConfirmDialog(this, "The text has been changed.\nDo you want to save the changes?");
 
             if(b==0)
                     file_save();
             else if(b==1)
                     System.exit(0);
-            else if(b==2)
-                    return;
+            else if(b==2) {
+            }
         }
     }
 
@@ -1085,7 +1080,7 @@ public void actionPerformed(ActionEvent e){
                     robot.keyRelease(KeyEvent.VK_CONTROL);
 
             } catch (AWTException e) {
-                    e.printStackTrace();
+                    System.err.println(e);
             }
 
     }
@@ -1100,7 +1095,7 @@ public void actionPerformed(ActionEvent e){
                     robot.keyRelease(KeyEvent.VK_Y);
                     robot.keyRelease(KeyEvent.VK_CONTROL);
             } catch (AWTException e) {
-                    e.printStackTrace();
+                    System.err.println(e);
             }
     }
 
@@ -1121,7 +1116,7 @@ public void actionPerformed(ActionEvent e){
 
             } catch (AWTException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    System.err.println(e);
             }
     }
     
@@ -1137,8 +1132,8 @@ public void actionPerformed(ActionEvent e){
                     robot.keyRelease(KeyEvent.VK_CONTROL);
 
             } catch (AWTException e) {
+                System.err.println(e);
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
             }
     }
     /**
@@ -1282,10 +1277,10 @@ public void actionPerformed(ActionEvent e){
             param = "zero\r\ny\r\nsp " + jSlider.getValue() + "\r\n\r\n";
         
         str = param + str + "\n";
-        FileWriter fw = new FileWriter(myfile + "_ok.txt");
-        fw.write(str);
-        fw.close();
-        System.out.println(myfile + "_ok.txt generated");
+        try (FileWriter fw = new FileWriter(myfile + "_ok.txt")) {
+            fw.write(str);
+        }
+        System.out.println(myfile + "_ok.txt generated.");
     }
     
     public void run_parser() throws BadLocationException{
@@ -1295,7 +1290,7 @@ public void actionPerformed(ActionEvent e){
                 file_save();
                 if (!is_saved)
                     return;
-                ANTLRStringStream cs = new ANTLRStringStream(t.getText(0, t.getDocument().getLength()).toLowerCase()+"\n");
+                ANTLRStringStream cs = new ANTLRStringStream(t.getText(0, t.getDocument().getLength()).toLowerCase());
                 Val2Lexer lexer = new Val2Lexer(cs);
                 CommonTokenStream tokens = new CommonTokenStream(lexer);
                 Val2Parser parser = new Val2Parser(tokens);
@@ -1308,7 +1303,7 @@ public void actionPerformed(ActionEvent e){
                  * warnings.
                  */
                 if (output.getText().contentEquals("Output:") & is_saved){
-                    System.out.println("No errors found");
+                    System.out.println("No errors found.");
                     optimize_code();
                      }
                 else if (jCIgnore.isSelected()){
@@ -1320,7 +1315,7 @@ public void actionPerformed(ActionEvent e){
             }
                 else
                 //If 't' is empty.
-                    output.setText("Output:\nNo code to check");
+                    output.setText("Output:\nNo code to check.");
         }
         catch(RecognitionException re) {
             System.err.println(re);
