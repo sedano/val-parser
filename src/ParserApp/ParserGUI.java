@@ -1275,7 +1275,7 @@ public void actionPerformed(ActionEvent e){
         else
             param = "zero\r\nn\r\nsp " + jSlider.getValue() + "\r\n\r\n";
         
-        str = param + str + "\n";
+        str = param + str + "\r\n";
         try (FileWriter fw = new FileWriter(myfile + "_ok.txt")) {
             fw.write(str);
         }
