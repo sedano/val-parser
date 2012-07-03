@@ -30,7 +30,7 @@
         <Property name="name" type="java.lang.String" value="jAbout"/>
         <Property name="resizable" type="boolean" value="false"/>
         <Property name="type" type="java.awt.Window$Type" editor="org.netbeans.modules.form.editors.EnumEditor">
-          <Value id="UTILITY"/>
+          <Value id="POPUP"/>
         </Property>
       </Properties>
       <Events>
@@ -154,7 +154,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="jVersion">
           <Properties>
-            <Property name="text" type="java.lang.String" value="0.4b"/>
+            <Property name="text" type="java.lang.String" value="1.1"/>
             <Property name="toolTipText" type="java.lang.String" value=""/>
           </Properties>
         </Component>
@@ -802,7 +802,6 @@
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="Clear memory"/>
                 <Property name="toolTipText" type="java.lang.String" value="Empties the robot memory"/>
-                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="focusable" type="boolean" value="false"/>
                 <Property name="horizontalTextPosition" type="int" value="4"/>
                 <Property name="verticalTextPosition" type="int" value="3"/>

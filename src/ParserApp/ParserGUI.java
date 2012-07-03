@@ -173,7 +173,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         jAbout.setMinimumSize(new java.awt.Dimension(380, 270));
         jAbout.setName("jAbout");
         jAbout.setResizable(false);
-        jAbout.setType(java.awt.Window.Type.UTILITY);
+        jAbout.setType(java.awt.Window.Type.POPUP);
         jAbout.addWindowFocusListener(new java.awt.event.WindowFocusListener() {
             public void windowGainedFocus(java.awt.event.WindowEvent evt) {
             }
@@ -195,7 +195,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         jVersionB.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jVersionB.setText("Version:");
 
-        jVersion.setText("0.4b");
+        jVersion.setText("1.1");
         jVersion.setToolTipText("");
 
         jLibrariesB.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -500,7 +500,6 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         jCheck.setSelected(true);
         jCheck.setText("Clear memory");
         jCheck.setToolTipText("Empties the robot memory");
-        jCheck.setEnabled(false);
         jCheck.setFocusable(false);
         jCheck.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         jCheck.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -1274,7 +1273,7 @@ public void actionPerformed(ActionEvent e){
         if (jCheck.isSelected())
             param = "zero\r\ny\r\nsp " + jSlider.getValue() + "\r\n\r\n";
         else
-            param = "zero\r\ny\r\nsp " + jSlider.getValue() + "\r\n\r\n";
+            param = "zero\r\nn\r\nsp " + jSlider.getValue() + "\r\n\r\n";
         
         str = param + str + "\n";
         try (FileWriter fw = new FileWriter(myfile + "_ok.txt")) {
