@@ -74,6 +74,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
                                                 is_saved = true;
                                                 prefs.put("dirPref",path);
                                                 setTitle("VAL Parser - " + myfile.getName());
+                                                ((jsyntaxpane.SyntaxDocument)t.getDocument()).clearUndos();
                                                 }
                                             }
                                         }
@@ -196,7 +197,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         jVersionB.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jVersionB.setText("Version:");
 
-        jVersion.setText("1.2");
+        jVersion.setText("1.3");
         jVersion.setToolTipText("");
 
         jLibrariesB.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -1257,7 +1258,7 @@ public void actionPerformed(ActionEvent e){
      * simple approach TODO: improve it.
      */
     public boolean has_errors(){
-        String out_console = output.getText().replaceAll("warning:.*\r?\n?","");
+        String out_console = output.getText().replaceAll("line [0-9]*:[0-9]* warning:.*\r?\n?","");
         out_console = out_console.replaceAll("\r?\n","");
         if (out_console.contentEquals("Output:") )
             return false;
@@ -1320,11 +1321,11 @@ public void actionPerformed(ActionEvent e){
                  * warnings. DONE x
                  */
                 if (!has_errors() & is_saved){
-                    System.out.println("no errors found.");
+                    System.out.println("\nno errors found.");
                     optimize_code();
                      }
                 else if (jCIgnore.isSelected()){
-                    System.out.println("ignoring errors...");
+                    System.out.println("\nignoring errors...");
                     optimize_code(); 
                 }
                 else {
