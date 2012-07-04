@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.Iterator;
+import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -78,11 +79,11 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
                                         }
                                         catch(FileNotFoundException e)
                                         {
-                                            System.err.println("File not found: \n"+e);
+                                            System.err.println("file not found: \n"+e);
                                         }
                                         catch(IOException e)
                                         {
-                                            System.err.println("File could not be read: \n"+e);
+                                            System.err.println("file could not be read: \n"+e);
                                         }
                                     }
                             });
@@ -143,9 +144,9 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         jLSpeed = new javax.swing.JLabel();
         jCheck = new javax.swing.JCheckBox();
         jParseBtn = new javax.swing.JButton();
-        jSeparator5 = new javax.swing.JSeparator();
         jWarning = new javax.swing.JButton();
         jCIgnore = new javax.swing.JCheckBox();
+        jSeparator4 = new javax.swing.JSeparator();
         jLCode = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
@@ -195,7 +196,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         jVersionB.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jVersionB.setText("Version:");
 
-        jVersion.setText("1.1");
+        jVersion.setText("1.2");
         jVersion.setToolTipText("");
 
         jLibrariesB.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -541,31 +542,31 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jSeparator4)
+                    .addComponent(jParseBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jSlider, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jCheck)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
+                        .addComponent(jWarning))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jCIgnore)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jSeparator5, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jParseBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jCheck)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jWarning))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLMSpeed)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLSpeed)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator5, javax.swing.GroupLayout.DEFAULT_SIZE, 10, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
+                .addGap(23, 23, 23)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLMSpeed)
@@ -830,7 +831,7 @@ public class ParserGUI extends javax.swing.JFrame implements ActionListener {
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
-    private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSlider jSlider;
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JSplitPane jSplitPane3;
@@ -864,7 +865,7 @@ public void actionPerformed(ActionEvent e){
             try {
                 file_save();
                 if (is_saved){
-                System.out.println("Warning: Ignoring errors");
+                System.out.println("warning: ignoring errors");
                 optimize_code();
                 }
             } catch (IOException ex) {
@@ -1055,8 +1056,11 @@ public void actionPerformed(ActionEvent e){
         {
             int b = JOptionPane.showConfirmDialog(this, "The text has been changed.\nDo you want to save the changes?");
 
-            if(b==0)
+            if(b==0){
                     file_save();
+                    if (is_saved)
+                    System.exit(0);
+            }
             else if(b==1)
                     System.exit(0);
             else if(b==2) {
@@ -1165,7 +1169,7 @@ public void actionPerformed(ActionEvent e){
             TreeSet<String> programs = Val2Parser.setPrograms;
             TreeSet<String> variables = Val2Parser.setVariables;
             TreeSet<String> locations = Val2Parser.setLocations;
-            TreeSet<String> loads = Val2Parser.setLoads;
+            TreeSet<String> loads = Val2Parser.setLoadedPrograms;
 
             DefaultMutableTreeNode root = new DefaultMutableTreeNode("Workspace"); 
             DefaultMutableTreeNode parent;
@@ -1228,24 +1232,38 @@ public void actionPerformed(ActionEvent e){
             Val2Parser.setPrograms.clear();
             Val2Parser.setVariables.clear();
             Val2Parser.setLocations.clear();
-            Val2Parser.setLoads.clear();
+            Val2Parser.setLoadedPrograms.clear();
+            Val2Parser.setLabels.clear();
 }
     
     
     public void check_warning(){
         if (!jCheck.isSelected()){
             jWarning.setEnabled(true);
-            //System.out.println("It is recommended to clear the memory");
+            //System.out.println("it is recommended to clear the memory");
         }
         else if (jSlider.getValue() >= 75){
             jWarning.setEnabled(true);
-            //System.out.println("Speed may be too high");
+            //System.out.println("speed may be too high");
         }
         else
             jWarning.setEnabled(false);
         
     }
      
+    /**
+     * has_errors() checks if the parser generated errors, will be used to
+     * determine if output will be generated or not. Omits warnings with
+     * simple approach TODO: improve it.
+     */
+    public boolean has_errors(){
+        String out_console = output.getText().replaceAll("warning:.*\r?\n?","");
+        out_console = out_console.replaceAll("\r?\n","");
+        if (out_console.contentEquals("Output:") )
+            return false;
+        return true;  
+    }
+            
     
     /**
      * optimize_code() uses java regexp to delete comments, empty lines and add
@@ -1255,7 +1273,7 @@ public void actionPerformed(ActionEvent e){
      */
     public void optimize_code() throws IOException{
         String str, param;
-        System.out.println("Generating optimized code...");
+        System.out.println("generating optimized code...");
         str= t.getText().toLowerCase();
         //Remove comments
         str = str.replaceAll(";.*?\r?\n","\r\n");
@@ -1299,22 +1317,35 @@ public void actionPerformed(ActionEvent e){
                 /**
                  * To check if there are no errors simply checks that the
                  * output content is empty. TODO: Change the approach to allow
-                 * warnings.
+                 * warnings. DONE x
                  */
-                if (output.getText().contentEquals("Output:") & is_saved){
-                    System.out.println("No errors found.");
+                if (!has_errors() & is_saved){
+                    System.out.println("no errors found.");
                     optimize_code();
                      }
                 else if (jCIgnore.isSelected()){
-                    System.out.println("Ignoring errors...");
+                    System.out.println("ignoring errors...");
                     optimize_code(); 
+                }
+                else {
+                    int count=0;
+                    StringTokenizer stk=new StringTokenizer(output.getText()," ");
+                    while(stk.hasMoreTokens()){
+                        String token=stk.nextToken();
+                        if(token.equals("error:")) count++;
+                    }
+                    if(count==1)
+                        System.out.println("\n"+ count + " error");
+                    else
+                        System.out.println("\n"+ count + " errors");
+
                 }
                 //Actions done with our without errors.
                 fill_tree();
             }
                 else
                 //If 't' is empty.
-                    output.setText("Output:\nNo code to check.");
+                    output.setText("Output:\nno code to check.");
         }
         catch(RecognitionException re) {
             System.err.println(re);
