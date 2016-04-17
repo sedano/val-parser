@@ -1,15 +1,13 @@
-# val-parser
-
-VAL Robot Programming Environment
+# VAL Robot Programming Environment
 
 Full featured text editor with syntax checking (parser) for VAL II robot programming languages.
 
-Code checking: Can check syntactic errors of programs written in VAL.<br>
-Text editing: Can open, save and create VAL files.<br>
-Pre-processing: Allows to easily and securely set system parameters.<br>
-Post-processing: Can generate optimized files for the robot interpreter.<br>
-Multi-platform: Can be run in most operating systems.<br>
-Open Source: Feel free to use and contribute.
+<b>Code checking:</b> Can check syntactic errors of programs written in VAL.<br>
+<b>Text editing:</b> Can open, save and create VAL files.<br>
+<b>Pre-processing:</b> Allows to easily and securely set system parameters.<br>
+<b>Post-processing:</b> Can generate optimized files for the robot interpreter.<br>
+<b>Multi-platform:</b> Can be run in most operating systems.<br>
+<b>Open Source:</b> Feel free to use and contribute.
 
 
 Made with support from the European Master in Advanced Robotics.
